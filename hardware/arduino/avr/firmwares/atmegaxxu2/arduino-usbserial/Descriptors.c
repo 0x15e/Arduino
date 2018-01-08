@@ -219,9 +219,9 @@ const USB_Descriptor_String_t PROGMEM ProductString =
 			
 		.UnicodeString          = L"Arduino Uno"
 	#elif (ARDUINO_MODEL_PID == ARDUINO_MEGA2560_PID)
-		.Header                 = {.Size = USB_STRING_LEN(17), .Type = DTYPE_String},
+		.Header                 = {.Size = USB_STRING_LEN(19), .Type = DTYPE_String},
 			
-		.UnicodeString          = L"Arduino Mega 2560"
+		.UnicodeString          = L"Speeduino Mega 2560"
 	#endif
 	
 };

@@ -153,6 +153,9 @@ void SetupHardware(void)
 	/* Pull target /RESET line high */
 	AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
 	AVR_RESET_LINE_DDR  |= AVR_RESET_LINE_MASK;
+
+	/* Setup PB7 for input / reset locking */
+	SPEEDUINO_RESET_LOCK_DDR &= ~SPEEDUINO_RESET_LOCK_MASK;
 }
 
 /** Event handler for the library USB Configuration Changed event. */
@@ -234,8 +237,10 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo)
 {
 	bool CurrentDTRState = (CDCInterfaceInfo->State.ControlLineStates.HostToDevice & CDC_CONTROL_LINE_OUT_DTR);
+	bool CurrentLockState = SPEEDUINO_RESET_LOCK_PIN & SPEEDUINO_RESET_LOCK_MASK;
 
-	if (CurrentDTRState)
+	// The lock pin must be LOW for us to reset on DTR
+	if (CurrentDTRState && !CurrentLockState)
 	  AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
 	else
 	  AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;

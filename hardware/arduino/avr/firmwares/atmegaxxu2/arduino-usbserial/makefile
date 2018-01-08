@@ -1,6 +1,6 @@
 # Hey Emacs, this is a -*- makefile -*-
 #----------------------------------------------------------------------------
-# WinAVR Makefile Template written by Eric B. Weddington, Jörg Wunsch, et al.
+# WinAVR Makefile Template written by Eric B. Weddington, JÃ¶rg Wunsch, et al.
 #  >> Modified for use with the LUFA project. <<
 #
 # Released to the Public Domain
@@ -62,16 +62,16 @@
 # 	Since the ATMEGA8U2 part is not directly supported by the current
 #	versions of either avrdude or dfu-programmer, we specify a dummy
 #	part; AT90USB82 which is close enough in memory size and organization
-MCU = atmega8u2
-MCU_AVRDUDE = at90usb82
-MCU_DFU = at90usb82
+MCU = atmega16u2
+MCU_AVRDUDE = at90usb162
+MCU_DFU = at90usb162
 
 # Specify the Arduino model using the assigned PID.  This is used by Descriptors.c
 #   to set PID and product descriptor string
 # Uno PID:
-ARDUINO_MODEL_PID = 0x0001
+#ARDUINO_MODEL_PID = 0x0001
 # Mega 2560 PID:
-#ARDUINO_MODEL_PID = 0x0010
+ARDUINO_MODEL_PID = 0x0010
 
 
 # Target board (see library "Board Types" documentation, NONE for projects not requiring
@@ -123,7 +123,7 @@ OBJDIR = .
 
 
 # Path to the LUFA library
-LUFA_PATH = ../..
+LUFA_PATH = ../../../../../../../LUFA-100807
 
 
 # LUFA library compile-time options
@@ -210,9 +210,12 @@ CDEFS += -DBOARD=BOARD_$(BOARD)
 CDEFS += $(LUFA_OPTS)
 CDEFS += -DAVR_RESET_LINE_PORT="PORTD"
 CDEFS += -DAVR_RESET_LINE_DDR="DDRD"
-CDEFS += -DAVR_RESET_LINE_MASK="(1 << 7)"
+CDEFS += -DAVR_RESET_LINE_MASK="(1 << PD7)"
 CDEFS += -DTX_RX_LED_PULSE_MS=3
 CDEFS += -DPING_PONG_LED_PULSE_MS=100
+CDEFS += -DSPEEDUINO_RESET_LOCK_PIN="PINB"
+CDEFS += -DSPEEDUINO_RESET_LOCK_DDR="DDRB"
+CDEFS += -DSPEEDUINO_RESET_LOCK_MASK="(1 << PINB7)"
 
 # Place -D or -U options here for ASM sources
 ADEFS  = -DF_CPU=$(F_CPU)

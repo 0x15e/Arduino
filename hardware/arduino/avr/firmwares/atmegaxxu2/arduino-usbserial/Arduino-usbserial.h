@@ -65,6 +65,15 @@
 		/** LED mask for the library LED driver, to indicate that the USB interface is busy. */
 		#define LEDMASK_BUSY             (LEDS_LED1 | LEDS_LED2)		
 		
+		/** Send this command at power-on to notify the Speeduino that there's a custom bootloader */
+		#define SPEEDUINO_NOTIFICATION_CMD '`'
+		
+		/** Firmware version byte that we can send to TS in case we need to know that in the future */
+		#define SPEEDUINO_FIRMWARE_LEVEL 1
+		
+		/** TunerStudio sends this command first thing when it connects to the Speeduino */
+		#define TS_PROTOCOL_CMD 'F'
+		
 	/* Function Prototypes: */
 		void SetupHardware(void);
 
@@ -75,5 +84,7 @@
 		
 		void EVENT_CDC_Device_LineEncodingChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);
 		void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const CDCInterfaceInfo);		
+
+		bool isNewConnection;
 
 #endif /* _ARDUINO_USBSERIAL_H_ */

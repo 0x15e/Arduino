@@ -42,6 +42,8 @@ RingBuff_t USBtoUSART_Buffer;
 /** Circular buffer to hold data from the serial port before it is sent to the host. */
 RingBuff_t USARTtoUSB_Buffer;
 
+bool isNewConnection = true;
+
 /** Pulse generation counters to keep track of the number of milliseconds remaining for each pulse type */
 volatile struct
 {
@@ -94,8 +96,15 @@ int main(void)
 			int16_t ReceivedByte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
 			/* Read bytes from the USB OUT endpoint into the USART transmit buffer */
-			if (!(ReceivedByte < 0))
-			  RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+			if (!(ReceivedByte < 0)) {
+				if (isNewConnection && (char)ReceivedByte == TS_PROTOCOL_CMD) {
+					RingBuffer_Insert(&USBtoUSART_Buffer, SPEEDUINO_NOTIFICATION_CMD);
+					RingBuffer_Insert(&USBtoUSART_Buffer, SPEEDUINO_FIRMWARE_LEVEL);
+				}
+				
+				RingBuffer_Insert(&USBtoUSART_Buffer, ReceivedByte);
+				isNewConnection = false;
+			}
 		}
 		
 		/* Check if the UART receive buffer flush timer has expired or the buffer is nearly full */
@@ -240,8 +249,11 @@ void EVENT_CDC_Device_ControLineStateChanged(USB_ClassInfo_CDC_Device_t* const C
 	bool CurrentLockState = SPEEDUINO_RESET_LOCK_PIN & SPEEDUINO_RESET_LOCK_MASK;
 
 	// The lock pin must be LOW for us to reset on DTR
-	if (CurrentDTRState && !CurrentLockState)
-	  AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
-	else
+	if (CurrentDTRState && !CurrentLockState) {
+	  isNewConnection = true;
+      AVR_RESET_LINE_PORT &= ~AVR_RESET_LINE_MASK;
+	}
+	else {
 	  AVR_RESET_LINE_PORT |= AVR_RESET_LINE_MASK;
+	}
 }
